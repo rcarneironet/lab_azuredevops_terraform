@@ -34,6 +34,6 @@ steps:
   displayName: 'Terraform : azurerm'
   inputs:
     command: apply
-    workingDirectory: configuration
+    workingDirectory: $(CHANGE_FOR_YOUR_DIRECTORY_WHERE_TERRAFORM_SCRIPT_IS)
     commandOptions: '-auto-approve '
     environmentServiceNameAzureRM: $(CHANGE_FOR_YOUR_SERVICE_CONNECTION_NAME)
