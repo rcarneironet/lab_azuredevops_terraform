@@ -1,0 +1,39 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+  displayName: 'Install Terraform latest'
+
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+  displayName: 'Terraform : azurerm'
+  inputs:
+    workingDirectory: configuration
+    backendServiceArm: 'Visual Studio Enterprise Subscription (7e315258-a330-417a-af09-7a08726008aa)'
+    backendAzureRmResourceGroupName: $(AZURE_RESOURCE_GROUP_NAME)
+    backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
+    backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
+    backendAzureRmKey: terraform.tfstate
+
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+  displayName: 'Terraform : azurerm'
+  inputs:
+    command: plan
+    workingDirectory: configuration
+    environmentServiceNameAzureRM: $(SERVICE_CONNECTION_NAME)
+
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+  displayName: 'Terraform : azurerm'
+  inputs:
+    command: apply
+    workingDirectory: configuration
+    commandOptions: '-auto-approve '
+    environmentServiceNameAzureRM: $(SERVICE_CONNECTION_NAME)
