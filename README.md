@@ -1,88 +1,37 @@
-# Cloud Adoption Framework landing zones for Terraform - Starter template
+#Getting started
 
-## Creating your environment
+Before getting started working with Terraform in Azure DevOps, make sure to create a Storage account in Azure and provision a Container. This container will be used by Terraform to keep its state updated. Refer to this [document](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal) in order to create a storage account in the Azure Portal.
 
-When creating a new environment with landing zone, you will customize and deploy the levels from the level 0 up to level 4. It is important to respect that order to deploy the enterprise configuration and hierarchy as per the [following guidance](https://github.com/Azure/caf-terraform-landingzones/blob/master/documentation/code_architecture/hierarchy.md).
+As a next step, create an Azure DevOps project to version a Git repository to run a CI pipeline. Refer to this [document](https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&amp;tabs=preview-page) to get it done. Additionally, you&#39;ll need to install Terraform extension for Azure DevOps. Visit [this link](https://marketplace.visualstudio.com/items?itemName=ms-devlabs.custom-terraform-tasks) to get it done.
 
-This means configuring the different variables for:
+**Option 1) Setting up CI pipeline using Terraform in Azure DevOps**
 
-- Launchpad (remote state management, security, bastion host, Azure DevOps environment, and DevOps agents, GitHub or Terraform Cloud)
-- Foundations
-- Networking (hub network, Virtual WAN, Application Gateway, etc.)
-- Any application landing zone (data and analytics, Azure Kubernetes Services, etc.)
+The way it works is quite simple. Just create a new pipeline in Azure DevOps and point to file &quot;sample-azure-pipelines.yaml&quot; which is the file responsible to run the pipeline in Azure and provision the infrastructure.
 
-In order to create those customized configuration environment, you can leverage:
+As we can see, there are many variables that would need to be filled out, such as:
 
-* the examples present in this repository,
-* the on the CAF landing zone [main repo](https://github.com/Azure/caf-terraform-landingzones)
-* discuss with peers on [Gitter](https://gitter.im/aztfmod/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+- **azure\_subscription\_id** - You&#39;ll need to grant access from Azure DevOps to an Azure subscription to be able to deploy resources. This can be easily found in &quot;Project settings&quot; then &quot;Service connections&quot; menu. Just set up a new connection.
+- **resource\_group\_name** - This is the resource group in which resources will be deployed within Azure.
+- **storage\_account\_name** - This is the storage account you&#39;ll need to create in Azure. This is needed because Terraform needs a storage to maintain its states.
+- **container\_terraform** - This is the container you&#39;ll need to create in your storage account. Both are needed to enable this pipeline to work.
 
-## General getting started
+![](https://github.com/rcarneironet/lab_azuredevops_terraform/blob/main/images/ci-terraform-setup.png)
 
-### 0. Use this template to create your own configuration repository
+**Option 2) Create a CI pipeline using Azure DevOps GUI**
 
-You can either click "Use this template" at the root of this GitHub repository, or just import this repository into your favorite git technology. Once setup, clone the content locally on your laptop and open it with Visual Studio Code. You can see a full list of prerequisites [here](https://github.com/Azure/caf-terraform-landingzones/blob/master/documentation/getting_started/getting_started.md). You can also use GitHub Codespaces as your development environment.
+In this case, if we prefer to create the pipeline using the graphical interface, make sure to add the following tasks and configurations:
 
+Terraform Install task
 
-### 1. Clone the public landing zones
+![](https://github.com/rcarneironet/lab_azuredevops_terraform/blob/main/images/ci-terraform-task1.png)
 
-First step is to get the landing zones logic in the same work space, so let's clone the environment locally:
+Terraform Init task
 
-```bash
-git clone --branch 2107.1 https://github.com/Azure/caf-terraform-landingzones.git /tf/caf/landingzones
-# Or refresh an existing clone
-cd /tf/caf/landingzones
-git checkout 2107.1
-git pull
-```
+![](https://github.com/rcarneironet/lab_azuredevops_terraform/blob/main/images/ci-terraform-task2.png)
 
-Note that if you want to be able to edit the code and submit back a pull request to the community, you can also fork it in your own GitHub environment and clone it from there.
+Terraform Plan task
 
-### 2. Login the rover to Azure
+![](https://github.com/rcarneironet/lab_azuredevops_terraform/blob/main/images/ci-terraform-task3.png)
 
-Authenticate to your Azure environment using the following command:
-
-```bash
-rover login -t <tenant_name> -s <subscription_id>
-```
-
-Rover will echo back the subscription selected by default for your environment. If this is not the right subscription, modify it using the following command:
-
-```bash
-az account set -s <subscription_name_OR_GUID>
-```
-
-### Picking your environment
-
-Once you have completed the preliminary steps above, you can start reviewing the configurations, we recommend you start your first deployment with the demo section.
-
-| example environment    | description                                                                      |
-|------------------------|----------------------------------------------------------------------------------|
-| [demo](./demo)         | demo environment without RBAC, diagnostics and pipelines                         |
-| [sandpit](./sandpit)   | initial enterprise environment, with diagnostics and simple pipelines (optional) |
-| [non-prod](./non-prod) | WIP                                                                              |
-| [prod](prod)           | WIP                                                                              |
-
-## Multiple engineers in the same subscription
-
-If you want to have multiple users in the same subscription. In order to manage different working environment, we use the ```-env <name_of_environment>``` to create multiple environments in the same subscription.
-
-It will allow you to:
-
-- store the Terraform state into dedicated containers.
-- allow only the user that created the environment to access the state.
-- tag the deployment with the environment name.
-
-At anytime on a given subscription you can use the following command to see the different environments deployed:
-
-```bash
-rover landingzone list -level level0
-```
-
-## Community
-
-Feel free to open an issue for feature or bug, or to submit a PR.
-
-In case you have any question, you can reach out to tf-landingzones at microsoft dot com.
-
-You can also reach us on [Gitter](https://gitter.im/aztfmod/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+Terraform Validate and Apply Task 
+![](https://github.com/rcarneironet/lab_azuredevops_terraform/blob/main/images/ci-terraform-task4.png)
