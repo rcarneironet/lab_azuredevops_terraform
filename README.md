@@ -1,4 +1,4 @@
-#Getting started
+# Getting started
 
 Before getting started working with Terraform in Azure DevOps, make sure to create a Storage account in Azure and provision a Container. This container will be used by Terraform to keep its state updated. Refer to this [document](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal) in order to create a storage account in the Azure Portal.
 
