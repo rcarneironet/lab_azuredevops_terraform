@@ -17,10 +17,10 @@ steps:
   displayName: 'Terraform : azurerm'
   inputs:
     workingDirectory: configuration
-    backendServiceArm: 'Visual Studio Enterprise Subscription (7e315258-a330-417a-af09-7a08726008aa)'
-    backendAzureRmResourceGroupName: $(AZURE_RESOURCE_GROUP_NAME)
-    backendAzureRmStorageAccountName: $(STORAGE_ACCOUNT_NAME)
-    backendAzureRmContainerName: $(STORAGE_CONTAINER_NAME)
+    backendServiceArm: $(CHANGE_FOR_YOUR_AZURE_SUBSCRIPTION_SERVICE)
+    backendAzureRmResourceGroupName: $(CHANGE_FOR_YOUR_AZURE_RESOURCE_GROUP_NAME)
+    backendAzureRmStorageAccountName: $(CHANGE_FOR_YOUR_STORAGE_ACCOUNT_NAME)
+    backendAzureRmContainerName: $(CHANGE_FOR_YOUR_STORAGE_CONTAINER_NAME)
     backendAzureRmKey: terraform.tfstate
 
 - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
@@ -28,7 +28,7 @@ steps:
   inputs:
     command: plan
     workingDirectory: configuration
-    environmentServiceNameAzureRM: $(SERVICE_CONNECTION_NAME)
+    environmentServiceNameAzureRM: $(CHANGE_FOR_YOUR_SERVICE_CONNECTION_NAME)
 
 - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
   displayName: 'Terraform : azurerm'
@@ -36,4 +36,4 @@ steps:
     command: apply
     workingDirectory: configuration
     commandOptions: '-auto-approve '
-    environmentServiceNameAzureRM: $(SERVICE_CONNECTION_NAME)
+    environmentServiceNameAzureRM: $(CHANGE_FOR_YOUR_SERVICE_CONNECTION_NAME)
